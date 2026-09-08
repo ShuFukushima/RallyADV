@@ -1856,6 +1856,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2067306584}
   - component: {fileID: 2067306585}
+  - component: {fileID: 2067306586}
   m_Layer: 0
   m_Name: TestVehicle
   m_TagString: Untagged
@@ -1911,6 +1912,33 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2067306586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2067306583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8beed54fdf28d4a4789227c1a4cc0fb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PCarController
+  axleInfos:
+  - leftWheel: {fileID: 211946742}
+    rightWheel: {fileID: 310029648}
+    motor: 1
+    steering: 1
+  - leftWheel: {fileID: 800061240}
+    rightWheel: {fileID: 915424802}
+    motor: 0
+    steering: 0
+  _maxMotorTorque: 1000
+  _maxSteeringAngle: 45
+  _maxBrakeTorque: 2000
+  _throttleInput: 0
+  _steeringInput: 0
+  _brakeInput: 0
 --- !u!1 &2104696109
 GameObject:
   m_ObjectHideFlags: 0
