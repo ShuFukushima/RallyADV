@@ -21,6 +21,23 @@ public class PCarController : MonoBehaviour
     public float _steeringInput;
     public float _brakeInput;
 
+    [SerializeField] private Rigidbody _rb;
+    [SerializeField] private GameObject _centerOfMass = null;  // 重心を表すオブジェクト
+
+    private void Start()
+    {
+        _rb = GetComponent<Rigidbody>();
+        
+        if(_centerOfMass == null)
+        {
+            Debug.LogError("重心用の空オブジェクトを設定してください！");
+            return;
+        }
+
+        // 重心位置を重心用オブジェクトに合わせる
+        _rb.centerOfMass = _centerOfMass.transform.localPosition;
+    }
+
     private void Update()
     {
         Keyboard keyboard = Keyboard.current;
