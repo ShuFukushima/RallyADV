@@ -531,8 +531,12 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   _rpm: 0
-  _throttle: 1
+  _momentOfInertia: 0.1
+  _throttle: 0
   _generatedTorque: 0
+  _outputTorque: 0
+  _deltaAnguVel: 0
+  _deltaRPM: 0
 --- !u!65 &226744648
 BoxCollider:
   m_ObjectHideFlags: 0
