@@ -530,13 +530,21 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _rpm: 0
+  _rpm: 6000
+  _idleRPM: 900
   _momentOfInertia: 0.1
   _throttle: 0
+  _idleThrottle: 0.5
   _generatedTorque: 0
   _outputTorque: 0
   _deltaAnguVel: 0
   _deltaRPM: 0
+  _internalResistance: 0
+  _baseInternalResistance: 5
+  _coefficientInternalResistance: 0.001
+  _deltaAngTimer: 0
+  _changeMinRPM: 1000
+  _changeMaxRPM: 6000
 --- !u!65 &226744648
 BoxCollider:
   m_ObjectHideFlags: 0
