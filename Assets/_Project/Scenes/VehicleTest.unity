@@ -532,9 +532,11 @@ MonoBehaviour:
     m_RotationOrder: 4
   _rpm: 6000
   _idleRPM: 900
-  _momentOfInertia: 0.1
+  _revLimitRPM: 7000
+  _momentOfInertia: 0.001
   _throttle: 0
-  _idleThrottle: 0.5
+  _idleThrottle: 0.167
+  _appliedThrottle: 0
   _generatedTorque: 0
   _outputTorque: 0
   _deltaAnguVel: 0
