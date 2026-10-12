@@ -9,9 +9,9 @@ public class EngineModel : MonoBehaviour
     [SerializeField] private float _idleRPM = 900f;
     [SerializeField] private float _revLimitRPM = 7000f;
     /// <summary>慣性モーメント（kg·m²）</summary>
-    [SerializeField, Range(0.001f, 1f)] private float _momentOfInertia = 0.2f;
+    [SerializeField, Range(0.001f, 1f)] private float _momentOfInertia = 0.1f;
     [SerializeField, Range(0f, 1f)] private float _throttle;
-    [SerializeField] private float _idleThrottle = 0.2f;
+    [SerializeField] private float _idleThrottle = 0.3f;
     [SerializeField] private float _appliedThrottle;
     /// <summary>発生トルク（トルクカーブとスロットル開度から得られる値）</summary>
     [SerializeField] private float _generatedTorque;
@@ -26,13 +26,7 @@ public class EngineModel : MonoBehaviour
     /// <summary>基礎内部抵抗</summary>
     [SerializeField] private float _baseInternalResistance = 5f;
     /// <summary>内部抵抗の増加係数（N·m/RPM）</summary>
-    [SerializeField] private float _coefficientInternalResistance = 0.001f;
-
-
-    [Header("テスト用変数群")]
-    [SerializeField] private float _deltaAngTimer = 0f;
-    [SerializeField] private float _changeMinRPM = 1000f;
-    [SerializeField] private float _changeMaxRPM = 6000f;
+    [SerializeField] private float _coefficientInternalResistance = 0.003f;
 
     private void FixedUpdate()
     {
@@ -80,13 +74,6 @@ public class EngineModel : MonoBehaviour
         if(_rpm < 0f )
         {
             _rpm = 0f;
-        }
-
-
-        // RPMの変化時間を見るための処理
-        if(_rpm < _changeMaxRPM && _rpm > _changeMinRPM)
-        {
-            _deltaAngTimer += Time.deltaTime;
         }
         
     }
