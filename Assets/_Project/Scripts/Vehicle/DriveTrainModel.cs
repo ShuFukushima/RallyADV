@@ -21,6 +21,18 @@ public class DriveTrainModel : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float _transmissionEfficiency = 1f;
     [Tooltip("車輪側トルク（表示用）")]
     [SerializeField] private float _wheelTorque;
+    [Tooltip("エンジンRPM（実際のエンジンから。現在はテスト用手入力値）")]
+    [SerializeField] private float _engineRPM;
+    [Tooltip("クラッチの接続率（0で切断、1で完全につながる）")]
+    [SerializeField, Range(0f, 1f)] private float _clutchConnectRate = 0f;
+    [Tooltip("クラッチの係数（N・m/RPM）")]
+    [SerializeField] private float _clutchCoefficient = 0.05f;
+    [Tooltip("最大クラッチトルク（N・m 仮で100）")]
+    [SerializeField] private float _maxClutchTorque = 100f;
+    [Tooltip("回転差（表示用）")]
+    [SerializeField] private float _rotateDiff;
+    [Tooltip("クラッチトルク（表示用 プラスならエンジンが車輪を押し、マイナスなら車輪がエンジンを回す）")]
+    [SerializeField] private float _currentClutchTorque;
 
     private void FixedUpdate()
     {
@@ -28,9 +40,18 @@ public class DriveTrainModel : MonoBehaviour
         // エンジン側相当RPM = 車輪のRPM * ギア比 * ファイナル比
         _engineRPMFromWheel = _wheelRPM * _gearsRatio[_nowGear] * _finalRatio;
 
-        // 車輪側のトルク
-        // 車輪側トルク = エンジン側トルク * ギア比 * ファイナル比 * 伝達効率
-        _wheelTorque = _testEngineTorque * _gearsRatio[_nowGear] * _finalRatio * _transmissionEfficiency;
+        // 回転差
+        _rotateDiff = _engineRPM - _engineRPMFromWheel;
+
+        // クラッチトルク
+        // クラッチトルク = 回転差 * 係数
+        _currentClutchTorque = _rotateDiff * _clutchCoefficient;
+        // 範囲内に収め、接続率をかける
+        _currentClutchTorque = Mathf.Clamp(_currentClutchTorque, -_maxClutchTorque, _maxClutchTorque) * _clutchConnectRate;
+
+        // 車輪側のトルク（エンジン側トルクの手入力代わりにクラッチトルクを使用）
+        // 車輪側トルク = クラッチトルク * ギア比 * ファイナル比 * 伝達効率
+        _wheelTorque = _currentClutchTorque * _gearsRatio[_nowGear] * _finalRatio * _transmissionEfficiency;
     }
 
     private void Update()
