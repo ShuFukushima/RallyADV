@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,11 +15,22 @@ public class DriveTrainModel : MonoBehaviour
     [SerializeField] private float _finalRatio;
     [Tooltip("車輪の回転数から逆算される、エンジン側相当のRPM（テスト・表示用）")]
     [SerializeField] private float _engineRPMFromWheel;
+    [Tooltip("エンジン側トルク（N・m テスト用手入力）")]
+    [SerializeField] private float _testEngineTorque;
+    [Tooltip("動力の伝達効率（0～1）")]
+    [SerializeField, Range(0f, 1f)] private float _transmissionEfficiency = 1f;
+    [Tooltip("車輪側トルク（表示用）")]
+    [SerializeField] private float _wheelTorque;
 
     private void FixedUpdate()
     {
+        // エンジン側相当のRPM
         // エンジン側相当RPM = 車輪のRPM * ギア比 * ファイナル比
         _engineRPMFromWheel = _wheelRPM * _gearsRatio[_nowGear] * _finalRatio;
+
+        // 車輪側のトルク
+        // 車輪側トルク = エンジン側トルク * ギア比 * ファイナル比 * 伝達効率
+        _wheelTorque = _testEngineTorque * _gearsRatio[_nowGear] * _finalRatio * _transmissionEfficiency;
     }
 
     private void Update()
