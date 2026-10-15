@@ -1512,7 +1512,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc5bb81eab4040b43aa9d6e065c03644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DriveTrainModel
-  _wheelRPM: 1000
+  _wheelRPM: 0
   _gearsRatio:
   - 3.5
   - 3.538
@@ -1523,6 +1523,15 @@ MonoBehaviour:
   _nowGear: 1
   _finalRatio: 5.2
   _engineRPMFromWheel: 0
+  _testEngineTorque: 0
+  _transmissionEfficiency: 1
+  _wheelTorque: 0
+  _engineRPM: 2000
+  _clutchConnectRate: 0
+  _clutchCoefficient: 0.05
+  _maxClutchTorque: 100
+  _rotateDiff: 0
+  _currentClutchTorque: 0
 --- !u!65 &1548312952
 BoxCollider:
   m_ObjectHideFlags: 0
