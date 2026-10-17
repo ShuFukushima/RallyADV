@@ -1526,12 +1526,18 @@ MonoBehaviour:
   _testEngineTorque: 0
   _transmissionEfficiency: 1
   _wheelTorque: 0
-  _engineRPM: 2000
+  _engineRPM: 3000
   _clutchConnectRate: 0
   _clutchCoefficient: 0.05
   _maxClutchTorque: 100
   _rotateDiff: 0
   _currentClutchTorque: 0
+  _isGrounded: 0
+  _wheelInertia: 5
+  _vehicleMass: 700
+  _wheelRadius: 0.273
+  _momentOfInertia: 0.1
+  _wheelInertiaVis: 0
 --- !u!65 &1548312952
 BoxCollider:
   m_ObjectHideFlags: 0
