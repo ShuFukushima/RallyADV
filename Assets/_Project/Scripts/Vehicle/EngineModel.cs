@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 public class EngineModel : MonoBehaviour
 {
     /// <summary>エンジンのトルクカーブ（横軸RPM、縦軸N·m）これは公称値のため、すでに内部抵抗分がひかれた後の値になる点に注意</summary>
@@ -27,8 +27,14 @@ public class EngineModel : MonoBehaviour
     [SerializeField] private float _baseInternalResistance = 5f;
     /// <summary>内部抵抗の増加係数（N·m/RPM）</summary>
     [SerializeField] private float _coefficientInternalResistance = 0.003f;
+    /// <summary>エンジンRPMを外部から読むためのプロパティ</summary>
+    public float EngineRPM => _rpm;
 
-    private void FixedUpdate()
+    /// <summary>
+    /// エンジンの1フレームのモデル 順番を明確化するため、ドライブトレインモデルから呼び出す
+    /// </summary>
+    /// <param name="loadTorque"></param>
+    public void EngineStep(float loadTorque)
     {
         // RPMに合わせて内部抵抗を計算する（基礎内部抵抗 + RPM * 係数
         _internalResistance = _baseInternalResistance + (_rpm * _coefficientInternalResistance);
@@ -41,11 +47,11 @@ public class EngineModel : MonoBehaviour
 
         // 使用するスロットルを決定する
         // 現在のRPMがアイドルRPMよりも低く、かつ、プレイヤーのスロットル入力がアイドルスロットルより低いなら
-        if(_rpm <= _idleRPM && _throttle <= _idleThrottle)
+        if (_rpm <= _idleRPM && _throttle <= _idleThrottle)
         {
             _appliedThrottle = _idleThrottle;
         }
-        else if(_rpm >= _revLimitRPM)
+        else if (_rpm >= _revLimitRPM)
         {
             // 現在のRPMがレブリミット以上であればスロットルを0にする
             _appliedThrottle = 0f;
@@ -58,10 +64,9 @@ public class EngineModel : MonoBehaviour
         // 発生トルクを計算（(現在のRPMから得られるトルク + 公称値に合わせるための内部抵抗分加算)×スロットル開度）
         _generatedTorque = (_torqueCurve.Evaluate(_rpm) + _internalResistance) * _appliedThrottle;
 
-        // 発生トルクと内部抵抗から出力トルクを求める
-        _outputTorque = _generatedTorque - _internalResistance;
-
-        // 出力トルクを慣性で割り、1フレームの時間を掛けて、角速度の変化を求める
+        // 発生トルクと内部抵抗、引数のクラッチトルクから出力トルクを求める
+        _outputTorque = _generatedTorque - _internalResistance - loadTorque;
+        // 出力トルクを慣性で割り、1フレームの時間をかけて角速度の変化を求める
         _deltaAnguVel = _outputTorque / _momentOfInertia * Time.deltaTime;
 
         // 角速度の変化をRPMの変化に換算する
@@ -71,10 +76,30 @@ public class EngineModel : MonoBehaviour
         _rpm += _deltaRPM;
 
         // RPMを0未満にしない
-        if(_rpm < 0f )
+        if (_rpm < 0f)
         {
             _rpm = 0f;
         }
-        
+    }
+
+    private void Update()
+    {
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null) return;
+
+        // スロットル入力（仮）
+        if (keyboard.wKey.isPressed)
+        {
+            _throttle += 1f * Time.deltaTime;
+        }
+        else
+        {
+            _throttle = 0f;
+        }
+        if( _throttle >= 1.0f)
+        {
+            _throttle = 1.0f;
+        }
+
     }
 }

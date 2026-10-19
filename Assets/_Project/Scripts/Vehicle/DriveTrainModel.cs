@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 // クラッチ・ギア・ファイナル・タイヤの回転までを表すモデル
 public class DriveTrainModel : MonoBehaviour
 {
-    [Tooltip("車輪の回転数（テスト用）")]
+    [Tooltip("車輪の回転数（CarControllerから取得）")]
     [SerializeField] private float _wheelRPM;
     [Tooltip("ギアを格納する配列（0が後進、1～が前進用）")]
     [SerializeField] private float[] _gearsRatio;
@@ -20,7 +20,7 @@ public class DriveTrainModel : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float _transmissionEfficiency = 1f;
     [Tooltip("車輪側トルク（表示用）")]
     [SerializeField] private float _wheelTorque;
-    [Tooltip("エンジンRPM（実際のエンジンから。現在はテスト用）")]
+    [Tooltip("エンジンRPM（実際のエンジンから読んだ値を表示）")]
     [SerializeField] private float _engineRPM;
     [Tooltip("クラッチの接続率（0で切断、1で完全につながる）")]
     [SerializeField, Range(0f, 1f)] private float _clutchConnectRate = 0f;
@@ -32,21 +32,22 @@ public class DriveTrainModel : MonoBehaviour
     [SerializeField] private float _rotateDiff;
     [Tooltip("クラッチトルク（表示用 プラスならエンジンが車輪を押し、マイナスなら車輪がエンジンを回す）")]
     [SerializeField] private float _currentClutchTorque;
-    [Tooltip("接地判定")]
-    [SerializeField] private bool _isGrounded = false;
-    [Tooltip("車輪側の慣性（駆動輪分の値 kg・m²）")]
-    [SerializeField] private float _wheelInertia = 5f;
-    [Tooltip("車重")]
-    [SerializeField] private float _vehicleMass = 700f;
-    [Tooltip("車輪の半径")]
-    [SerializeField] private float _wheelRadius = 0.273f;
-    [Tooltip("エンジン側の慣性（EngineModelの採用値と同値）")]
-    [SerializeField] private float _momentOfInertia = 0.1f;
-    [Tooltip("車輪側の慣性（表示用）")]
-    [SerializeField] private float _wheelInertiaVis;
 
-    private void FixedUpdate()
+
+    [Header("参照")]
+    [SerializeField] private EngineModel _engine;
+
+    /// <summary>
+    /// ドライブトレインの1フレームのモデル 順番を明確化するため、CarController から呼び出す
+    /// </summary>
+    /// <param name="loadWheelRPM"></param>
+    public float DriveTrainStep(float loadWheelRPM)
     {
+        // エンジンのRPMを取得
+        _engineRPM = _engine.EngineRPM;
+        // ホイールRPMを引数から代入
+        _wheelRPM = loadWheelRPM;
+
         // エンジン側相当のRPM
         // エンジン側相当RPM = 車輪のRPM * ギア比 * ファイナル比
         _engineRPMFromWheel = _wheelRPM * _gearsRatio[_nowGear] * _finalRatio;
@@ -60,43 +61,26 @@ public class DriveTrainModel : MonoBehaviour
         // 範囲内に収め、接続率をかける
         _currentClutchTorque = Mathf.Clamp(_currentClutchTorque, -_maxClutchTorque, _maxClutchTorque) * _clutchConnectRate;
 
+        // エンジンの処理を呼び出す
+        _engine.EngineStep(_currentClutchTorque);
+
         // 車輪側のトルク（エンジン側トルクの手入力代わりにクラッチトルクを使用）
         // 車輪側トルク = クラッチトルク * ギア比 * ファイナル比 * 伝達効率
         _wheelTorque = _currentClutchTorque * _gearsRatio[_nowGear] * _finalRatio * _transmissionEfficiency;
 
-        // 現在の車輪側の慣性を求める
-        float currentWheelInertia;
-        if(_isGrounded)
-        {
-            // 接地している：車輪側慣性 = 車輪側の慣性 + 車重 * ホイール半径^2
-            currentWheelInertia = _wheelInertia + _vehicleMass * _wheelRadius * _wheelRadius;
-        }
-        else
-        {
-            // 接地していない：車輪側の慣性 = 車輪側の慣性のまま
-            currentWheelInertia = _wheelInertia;
-        }
-        _wheelInertiaVis = currentWheelInertia;
-
-        // エンジン側の角速度の変化（RPM換算）
-        float deltaEngineAngVel = -_currentClutchTorque / _momentOfInertia * Time.deltaTime;
-        // 角速度の変化をRPMに換算してエンジン側RPMに足し合わせる
-        _engineRPM += (deltaEngineAngVel * 60f) / (2 * Mathf.PI);
-
-        // 車輪の角速度の変化
-        float deltaWheelAngVel = _wheelTorque / currentWheelInertia * Time.deltaTime;
-        _wheelRPM += (deltaWheelAngVel * 60f) / (2 * Mathf.PI);
+        // 駆動輪の総トルクを返す
+        return _wheelTorque;
     }
 
     private void Update()
     {
         Keyboard keyboard = Keyboard.current;
         // ギアの切り替え
-        if (keyboard.aKey.wasPressedThisFrame && _nowGear > 0)
+        if (keyboard.downArrowKey.wasPressedThisFrame && _nowGear > 0)
         {
             _nowGear--;
         }
-        else if(keyboard.dKey.wasPressedThisFrame && _nowGear < _gearsRatio.Length - 1)
+        else if(keyboard.upArrowKey.wasPressedThisFrame && _nowGear < _gearsRatio.Length - 1)
         {
             _nowGear++;
         }
