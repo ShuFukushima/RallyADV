@@ -37,8 +37,12 @@ public class DriveTrainModel : MonoBehaviour
     [Tooltip("クラッチフル接続のエンジンRPM")]
 
     [SerializeField] private float _clutchFullEngageRPM = 5000f;
-
-
+    [Tooltip("ATシフトアップ時の回転数")]
+    [SerializeField] private float _atShiftUpRPM = 6000f;
+    [Tooltip("シフトチェンジ直後の待ち時間")]
+    [SerializeField] private float _shiftWaitTime = 0.5f;
+    [Tooltip("前のシフト操作から経った時間")]
+    [SerializeField] private float _onShiftTime = 0.5f;
 
     [Header("参照")]
     [SerializeField] private EngineModel _engine;
@@ -51,6 +55,18 @@ public class DriveTrainModel : MonoBehaviour
     {
         // エンジンのRPMを取得
         _engineRPM = _engine.EngineRPM;
+
+        // ギアの切り替え（オートマ）
+        // 切り替え後、必ずRPM等の更新を行うため、こっちで行う
+        _onShiftTime += Time.deltaTime;
+        // 指定回転数以上 かつ 最大ギアではない　かつ　前進ギア　かつ　前のシフト操作から一定時間たっていれば（後進中に回転数が上がって1速にならないように）シフトアップ
+        if ((_engineRPM >= _atShiftUpRPM) && (_nowGear < _gearsRatio.Length - 1) && (_nowGear != 0) && (_onShiftTime >= _shiftWaitTime))
+        {
+            _nowGear++;
+            // 経過時間を0に戻す
+            _onShiftTime = 0f;
+        }
+
         // ホイールRPMを引数から代入
         _wheelRPM = loadWheelRPM;
 
@@ -86,7 +102,7 @@ public class DriveTrainModel : MonoBehaviour
     private void Update()
     {
         Keyboard keyboard = Keyboard.current;
-        // ギアの切り替え
+        // ギアの切り替え（マニュアル）
         if (keyboard.downArrowKey.wasPressedThisFrame && _nowGear > 0)
         {
             _nowGear--;
@@ -95,6 +111,8 @@ public class DriveTrainModel : MonoBehaviour
         {
             _nowGear++;
         }
+
+
     }
 
 }

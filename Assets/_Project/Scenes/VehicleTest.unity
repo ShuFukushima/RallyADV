@@ -2977,7 +2977,7 @@ Transform:
   m_GameObject: {fileID: 1212038784}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.451, z: -14.351}
+  m_LocalPosition: {x: 0, y: 3.451, z: -58}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3336,6 +3336,11 @@ MonoBehaviour:
   _maxClutchTorque: 100
   _rotateDiff: 0
   _currentClutchTorque: 0
+  _clutchEngageStartRPM: 900
+  _clutchFullEngageRPM: 5000
+  _atShiftUpRPM: 6000
+  _shiftWaitTime: 0.5
+  _onShiftTime: 0
   _engine: {fileID: 226744647}
 --- !u!65 &1548312952
 BoxCollider:
@@ -3459,7 +3464,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.5, y: 0.35, z: 0.5}
-  m_LocalScale: {x: 20, y: 0.2, z: 40}
+  m_LocalScale: {x: 20, y: 0.2, z: 156.42}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1959076929}
@@ -4190,7 +4195,7 @@ Transform:
   m_GameObject: {fileID: 1729421134}
   serializedVersion: 2
   m_LocalRotation: {x: -0.08715578, y: 0, z: 0, w: 0.9961947}
-  m_LocalPosition: {x: 0, y: 2.44, z: 26.59}
+  m_LocalPosition: {x: 0, y: 2.44, z: 89.8}
   m_LocalScale: {x: 20, y: 0.2, z: 40}
   m_ConstrainProportionsScale: 0
   m_Children: []
