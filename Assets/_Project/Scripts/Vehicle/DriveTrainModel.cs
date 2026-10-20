@@ -32,6 +32,12 @@ public class DriveTrainModel : MonoBehaviour
     [SerializeField] private float _rotateDiff;
     [Tooltip("クラッチトルク（表示用 プラスならエンジンが車輪を押し、マイナスなら車輪がエンジンを回す）")]
     [SerializeField] private float _currentClutchTorque;
+    [Tooltip("クラッチ接続時のエンジンRPM")]
+    [SerializeField] private float _clutchEngageStartRPM = 900f;
+    [Tooltip("クラッチフル接続のエンジンRPM")]
+
+    [SerializeField] private float _clutchFullEngageRPM = 5000f;
+
 
 
     [Header("参照")]
@@ -58,6 +64,11 @@ public class DriveTrainModel : MonoBehaviour
         // クラッチトルク
         // クラッチトルク = 回転差 * 係数
         _currentClutchTorque = _rotateDiff * _clutchCoefficient;
+
+        // 接続率をエンジンRPMで変更する
+        float clutchConnectRate = Mathf.InverseLerp(_clutchEngageStartRPM, _clutchFullEngageRPM, _engine.EngineRPM);
+        _clutchConnectRate = clutchConnectRate;
+
         // 範囲内に収め、接続率をかける
         _currentClutchTorque = Mathf.Clamp(_currentClutchTorque, -_maxClutchTorque, _maxClutchTorque) * _clutchConnectRate;
 
