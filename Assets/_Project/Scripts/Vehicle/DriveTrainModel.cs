@@ -35,10 +35,11 @@ public class DriveTrainModel : MonoBehaviour
     [Tooltip("クラッチ接続時のエンジンRPM")]
     [SerializeField] private float _clutchEngageStartRPM = 900f;
     [Tooltip("クラッチフル接続のエンジンRPM")]
-
     [SerializeField] private float _clutchFullEngageRPM = 5000f;
     [Tooltip("ATシフトアップ時の回転数")]
     [SerializeField] private float _atShiftUpRPM = 6000f;
+    [Tooltip("ATシフトダウン時の回転数")]
+    [SerializeField] private float _atShiftDownRPM = 2500f;
     [Tooltip("シフトチェンジ直後の待ち時間")]
     [SerializeField] private float _shiftWaitTime = 0.5f;
     [Tooltip("前のシフト操作から経った時間")]
@@ -59,11 +60,18 @@ public class DriveTrainModel : MonoBehaviour
         // ギアの切り替え（オートマ）
         // 切り替え後、必ずRPM等の更新を行うため、こっちで行う
         _onShiftTime += Time.deltaTime;
-        // 指定回転数以上 かつ 最大ギアではない　かつ　前進ギア　かつ　前のシフト操作から一定時間たっていれば（後進中に回転数が上がって1速にならないように）シフトアップ
+        // 指定回転数以上 かつ 最大ギアではない　かつ　前進ギア（後進中に回転数が上がって1速にならないように）　かつ　前のシフト操作から一定時間たっていればシフトアップ
         if ((_engineRPM >= _atShiftUpRPM) && (_nowGear < _gearsRatio.Length - 1) && (_nowGear != 0) && (_onShiftTime >= _shiftWaitTime))
         {
             _nowGear++;
             // 経過時間を0に戻す
+            _onShiftTime = 0f;
+        }
+        // 指定回転数以下　かつ　1速でない　かつ　前進ギア　かつ　前のシフト操作から一定時間たっていればシフトダウン
+        if((_engineRPM <= _atShiftDownRPM) && (_nowGear > 1) && (_onShiftTime >= _shiftWaitTime))
+        {
+            _nowGear--;
+            Debug.Log("befor gear : " + (_nowGear + 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
             _onShiftTime = 0f;
         }
 
