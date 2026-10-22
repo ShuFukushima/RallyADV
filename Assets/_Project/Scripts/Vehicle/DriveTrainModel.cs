@@ -4,6 +4,13 @@ using UnityEngine.InputSystem;
 // クラッチ・ギア・ファイナル・タイヤの回転までを表すモデル
 public class DriveTrainModel : MonoBehaviour
 {
+    [Tooltip("トランスミッションの種類（AT・MT）")]
+    public enum Transmission
+    {
+        AT,
+        MT
+    }
+
     [Tooltip("車輪の回転数（CarControllerから取得）")]
     [SerializeField] private float _wheelRPM;
     [Tooltip("ギアを格納する配列（0が後進、1～が前進用）")]
@@ -44,6 +51,8 @@ public class DriveTrainModel : MonoBehaviour
     [SerializeField] private float _shiftWaitTime = 0.5f;
     [Tooltip("前のシフト操作から経った時間")]
     [SerializeField] private float _onShiftTime = 0.5f;
+    [Tooltip("トランスミッションの種類（AT・MT）")]
+    [SerializeField] private Transmission _transmission = Transmission.AT;
 
     [Header("参照")]
     [SerializeField] private EngineModel _engine;
@@ -58,21 +67,25 @@ public class DriveTrainModel : MonoBehaviour
         _engineRPM = _engine.EngineRPM;
 
         // ギアの切り替え（オートマ）
-        // 切り替え後、必ずRPM等の更新を行うため、こっちで行う
-        _onShiftTime += Time.deltaTime;
-        // 指定回転数以上 かつ 最大ギアではない　かつ　前進ギア（後進中に回転数が上がって1速にならないように）　かつ　前のシフト操作から一定時間たっていればシフトアップ
-        if ((_engineRPM >= _atShiftUpRPM) && (_nowGear < _gearsRatio.Length - 1) && (_nowGear != 0) && (_onShiftTime >= _shiftWaitTime))
+        if(_transmission == Transmission.AT)
         {
-            _nowGear++;
-            // 経過時間を0に戻す
-            _onShiftTime = 0f;
-        }
-        // 指定回転数以下　かつ　1速でない　かつ　前進ギア　かつ　前のシフト操作から一定時間たっていればシフトダウン
-        if((_engineRPM <= _atShiftDownRPM) && (_nowGear > 1) && (_onShiftTime >= _shiftWaitTime))
-        {
-            _nowGear--;
-            Debug.Log("befor gear : " + (_nowGear + 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
-            _onShiftTime = 0f;
+            // 切り替え後、必ずRPM等の更新を行うため、こっちで行う
+            _onShiftTime += Time.deltaTime;
+            // 指定回転数以上 かつ 最大ギアではない　かつ　前進ギア（後進中に回転数が上がって1速にならないように）　かつ　前のシフト操作から一定時間たっていればシフトアップ
+            if ((_engineRPM >= _atShiftUpRPM) && (_nowGear < _gearsRatio.Length - 1) && (_nowGear != 0) && (_onShiftTime >= _shiftWaitTime))
+            {
+                _nowGear++;
+                Debug.Log("Transmission : AT" + " befor gear : " + (_nowGear - 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
+                // 経過時間を0に戻す
+                _onShiftTime = 0f;
+            }
+            // 指定回転数以下　かつ　1速でない　かつ　前進ギア　かつ　前のシフト操作から一定時間たっていればシフトダウン
+            if ((_engineRPM <= _atShiftDownRPM) && (_nowGear > 1) && (_onShiftTime >= _shiftWaitTime))
+            {
+                _nowGear--;
+                Debug.Log("Transmission : AT" + " befor gear : " + (_nowGear + 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
+                _onShiftTime = 0f;
+            }
         }
 
         // ホイールRPMを引数から代入
@@ -111,15 +124,19 @@ public class DriveTrainModel : MonoBehaviour
     {
         Keyboard keyboard = Keyboard.current;
         // ギアの切り替え（マニュアル）
-        if (keyboard.downArrowKey.wasPressedThisFrame && _nowGear > 0)
+        if(_transmission == Transmission.MT)
         {
-            _nowGear--;
+            if (keyboard.downArrowKey.wasPressedThisFrame && _nowGear > 1)
+            {
+                _nowGear--;
+                Debug.Log("Transmission : MT" + " befor gear : " + (_nowGear + 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
+            }
+            else if (keyboard.upArrowKey.wasPressedThisFrame && _nowGear < _gearsRatio.Length - 1)
+            {
+                _nowGear++;
+                Debug.Log("Transmission : MT" + " befor gear : " + (_nowGear - 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
+            }
         }
-        else if(keyboard.upArrowKey.wasPressedThisFrame && _nowGear < _gearsRatio.Length - 1)
-        {
-            _nowGear++;
-        }
-
 
     }
 

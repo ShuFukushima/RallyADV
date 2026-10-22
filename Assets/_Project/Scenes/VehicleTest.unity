@@ -2977,7 +2977,7 @@ Transform:
   m_GameObject: {fileID: 1212038784}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.451, z: -58}
+  m_LocalPosition: {x: 0, y: 3.451, z: -419.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3009,7 +3009,7 @@ MonoBehaviour:
     motor: 0
     steering: 0
   _maxSteeringAngle: 45
-  _maxBrakeTorque: 2000
+  _maxBrakeTorque: 500
   _steeringInput: 0
   _brakeInput: 0
   _driveWheelRPMAve: 0
@@ -3339,8 +3339,10 @@ MonoBehaviour:
   _clutchEngageStartRPM: 900
   _clutchFullEngageRPM: 5000
   _atShiftUpRPM: 6000
+  _atShiftDownRPM: 2500
   _shiftWaitTime: 0.5
   _onShiftTime: 0
+  _transmission: 1
   _engine: {fileID: 226744647}
 --- !u!65 &1548312952
 BoxCollider:
@@ -3464,7 +3466,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.5, y: 0.35, z: 0.5}
-  m_LocalScale: {x: 20, y: 0.2, z: 156.42}
+  m_LocalScale: {x: 20, y: 0.2, z: 851.2604}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1959076929}
@@ -4194,13 +4196,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1729421134}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.08715578, y: 0, z: 0, w: 0.9961947}
-  m_LocalPosition: {x: 0, y: 2.44, z: 89.8}
-  m_LocalScale: {x: 20, y: 0.2, z: 40}
+  m_LocalRotation: {x: -0.11576069, y: -0, z: -0, w: 0.9932772}
+  m_LocalPosition: {x: 0, y: 2.44, z: 284.3}
+  m_LocalScale: {x: 20, y: 0.2, z: 511.08002}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1959076929}
-  m_LocalEulerAnglesHint: {x: -10, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -13.295, y: 0, z: 0}
 --- !u!65 &1729421136
 BoxCollider:
   m_ObjectHideFlags: 0
