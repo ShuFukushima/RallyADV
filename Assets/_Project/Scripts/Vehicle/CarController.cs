@@ -8,9 +8,11 @@ public class CarController : MonoBehaviour
     public List<AxleInfo> _axleInfos;
     /// <summary>最大舵角</summary>
     [SerializeField] private float _maxSteeringAngle; // 適用可能な最大ハンドル角度
+    [SerializeField] private float _maxSideBrakeTorque;    // サイドブレーキの値
     public float _maxBrakeTorque;
     public float _steeringInput;
     public float _brakeInput;
+    public float _sideBrakeInput;
 
     /// <summary>駆動輪の平均回転数</summary>
     [SerializeField] private float _driveWheelRPMAve = 0;
@@ -49,6 +51,9 @@ public class CarController : MonoBehaviour
 
         // ブレーキ
         _brakeInput = keyboard.shiftKey.isPressed ? 1f : 0f;
+
+        // サイドブレーキ
+        _sideBrakeInput = keyboard.spaceKey .isPressed ? 1f : 0f;
     }
 
     public void FixedUpdate()
@@ -80,6 +85,7 @@ public class CarController : MonoBehaviour
         float motor = allWheelTorque / (float)_driveWheelCount;
         float steering = _maxSteeringAngle * _steeringInput;
         float brake = _maxBrakeTorque * _brakeInput;
+        float sideBrake = _maxSideBrakeTorque * _sideBrakeInput;
 
         // トルク・ステアリング・ブレーキを適用する
         foreach (AxleInfo axleInfo in _axleInfos)
@@ -95,8 +101,19 @@ public class CarController : MonoBehaviour
                 axleInfo.rightWheel.motorTorque = motor;
             }
 
-            axleInfo.leftWheel.brakeTorque = brake;
-            axleInfo.rightWheel.brakeTorque = brake;
+            if(axleInfo.rearWheel)
+            {
+                // 後輪ならサイドブレーキのトルクを加える（押してなければ0）
+                axleInfo.leftWheel.brakeTorque = brake + sideBrake;
+                axleInfo.rightWheel.brakeTorque = brake + sideBrake;
+            }
+            else
+            {
+                axleInfo.leftWheel.brakeTorque = brake;
+                axleInfo.rightWheel.brakeTorque = brake;
+            }
+
+
         }
     }
 }

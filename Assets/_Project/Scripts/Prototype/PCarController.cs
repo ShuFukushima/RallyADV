@@ -9,6 +9,7 @@ public class AxleInfo
     public WheelCollider rightWheel;
     public bool motor; //このホイールがエンジンにアタッチされているかどうか
     public bool steering; // このホイールがハンドルの角度を反映しているかどうか
+    public bool rearWheel;  // このホイールが後輪かどうか（サイドブレーキ用）
 }
 
 public class PCarController : MonoBehaviour

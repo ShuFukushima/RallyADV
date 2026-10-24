@@ -2929,10 +2929,12 @@ MonoBehaviour:
     rightWheel: {fileID: 2117587475}
     motor: 1
     steering: 1
+    rearWheel: 0
   - leftWheel: {fileID: 832387843}
     rightWheel: {fileID: 71948498}
     motor: 0
     steering: 0
+    rearWheel: 0
   _maxMotorTorque: 1000
   _maxSteeringAngle: 45
   _maxBrakeTorque: 2000
@@ -2977,7 +2979,7 @@ Transform:
   m_GameObject: {fileID: 1212038784}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.451, z: -419.5}
+  m_LocalPosition: {x: 0, y: 3.451, z: 281.98}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3004,14 +3006,18 @@ MonoBehaviour:
     rightWheel: {fileID: 2117587475}
     motor: 1
     steering: 1
+    rearWheel: 0
   - leftWheel: {fileID: 832387843}
     rightWheel: {fileID: 71948498}
     motor: 0
     steering: 0
+    rearWheel: 1
   _maxSteeringAngle: 45
-  _maxBrakeTorque: 500
+  _maxSideBrakeTorque: 250
+  _maxBrakeTorque: 400
   _steeringInput: 0
   _brakeInput: 0
+  _sideBrakeInput: 0
   _driveWheelRPMAve: 0
   _driveWheelCount: 0
   _rb: {fileID: 0}
@@ -3337,7 +3343,7 @@ MonoBehaviour:
   _rotateDiff: 0
   _currentClutchTorque: 0
   _clutchEngageStartRPM: 900
-  _clutchFullEngageRPM: 5000
+  _clutchFullEngageRPM: 3000
   _atShiftUpRPM: 6000
   _atShiftDownRPM: 2500
   _shiftWaitTime: 0.5
@@ -5174,10 +5180,12 @@ MonoBehaviour:
     rightWheel: {fileID: 310029648}
     motor: 1
     steering: 1
+    rearWheel: 0
   - leftWheel: {fileID: 800061240}
     rightWheel: {fileID: 915424802}
     motor: 0
     steering: 0
+    rearWheel: 0
   _maxMotorTorque: 1000
   _maxSteeringAngle: 45
   _maxBrakeTorque: 2000
