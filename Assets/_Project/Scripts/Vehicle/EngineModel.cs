@@ -30,6 +30,9 @@ public class EngineModel : MonoBehaviour
     /// <summary>エンジンRPMを外部から読むためのプロパティ</summary>
     public float EngineRPM => _rpm;
 
+    [Header("参照")]
+    [SerializeField] private VehicleSettingSO _setting;
+
     /// <summary>
     /// エンジンの1フレームのモデル 順番を明確化するため、ドライブトレインモデルから呼び出す
     /// </summary>
@@ -80,6 +83,18 @@ public class EngineModel : MonoBehaviour
         {
             _rpm = 0f;
         }
+    }
+
+    private void Awake()
+    {
+        // 設定をScriptableObjectから読み取る
+        _torqueCurve = _setting.TorqueCurve;
+        _idleRPM = _setting.IdleRPM;
+        _idleThrottle = _setting.IdleThrottle;
+        _revLimitRPM = _setting.RevLimitRPM;
+        _momentOfInertia = _setting.MomentOfInertia;
+        _baseInternalResistance = _setting.BaseInternalResistance;
+        _coefficientInternalResistance = _setting.CoefficientInternalResistance;
     }
 
     private void Update()

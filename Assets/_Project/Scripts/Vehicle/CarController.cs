@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -21,22 +22,83 @@ public class CarController : MonoBehaviour
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private GameObject _centerOfMass = null;  // 重心を表すオブジェクト
 
+    [SerializeField] private float _speedKmh = 0;
+    private WheelCollider[] _wheels = new WheelCollider[4];
+
+    [Header("プロパティ")]
+    /// <summary>速度のプロパティ</summary>
+    public float SpeedKmh => _speedKmh;
+
     [Header("参照")]
     ///<summary>実際に車輪を駆動させるトルクを求める</summary>
     [SerializeField] private DriveTrainModel _driveTrain;
+    /// <summary>車両個別の設定</summary>
+    [SerializeField] private VehicleSettingSO _setting;
+
+    private void Awake()
+    {
+        // 設定を写す
+        // Rigidbody
+        _rb = GetComponent<Rigidbody>();
+        _rb.mass = _setting.Mass;
+        _rb.centerOfMass = _setting.CenterOfMass;
+
+        // CarController
+        _maxSteeringAngle = _setting.MaxSteeringAngle;
+        _maxBrakeTorque = _setting.MaxBrakeTorque;
+        _maxSideBrakeTorque = _setting.MaxSideBrakeTorque;
+        _axleInfos[0].motor = _setting.AxleMotor[0];
+        _axleInfos[1].motor = _setting.AxleMotor[1];
+        _axleInfos[0].steering = _setting.AxleSteering[0];
+        _axleInfos[1].steering = _setting.AxleSteering[1];
+
+        // WheelCollider の箱を先に組み立てる
+        JointSpring suspensionSpring = new JointSpring();
+        suspensionSpring.spring = _setting.Spring;
+        suspensionSpring.damper = _setting.Damper;
+        suspensionSpring.targetPosition = _setting.TargetPosition;
+
+        WheelFrictionCurve forwardFriction = new WheelFrictionCurve();
+        forwardFriction.extremumSlip = _setting.ForwardExtremumSlip;
+        forwardFriction.extremumValue = _setting.ForwardExtremumValue;
+        forwardFriction.asymptoteSlip = _setting.ForwardAsymptoteSlip;
+        forwardFriction.asymptoteValue = _setting.ForwardAsymptoteValue;
+        forwardFriction.stiffness = _setting.ForwardStiffness;
+
+        WheelFrictionCurve sidewaysFriction = new WheelFrictionCurve();
+        sidewaysFriction.extremumSlip = _setting.SidewaysExtremumSlip;
+        sidewaysFriction.extremumValue = _setting.SidewaysExtremumValue;
+        sidewaysFriction.asymptoteSlip = _setting.SidewaysAsymptoteSlip;
+        sidewaysFriction.asymptoteValue = _setting.SidewaysAsymptoteValue;
+        sidewaysFriction.stiffness = _setting.SidewaysStiffness;
+
+        // WheelCollider
+        foreach (AxleInfo axleInfo in _axleInfos)
+        {
+            WheelCollider[] wheels = { axleInfo.leftWheel, axleInfo.rightWheel };
+            foreach (WheelCollider wheel in wheels)
+            {
+                wheel.radius = _setting.WheelRadius;
+                wheel.wheelDampingRate = _setting.WheelDampingRate;
+                wheel.suspensionDistance = _setting.SuspensionDistance;
+                wheel.suspensionSpring = suspensionSpring;
+                wheel.forwardFriction = forwardFriction;
+                wheel.sidewaysFriction = sidewaysFriction;
+            }
+
+        }
+
+    }
 
     private void Start()
     {
-        _rb = GetComponent<Rigidbody>();
 
-        if (_centerOfMass == null)
-        {
-            Debug.LogError("重心用の空オブジェクトを設定してください！");
-            return;
-        }
-
-        // 重心位置を重心用オブジェクトに合わせる
-        _rb.centerOfMass = _centerOfMass.transform.localPosition;
+        // 情報を各輪ごとに読み取る
+        _wheels[0] = _axleInfos[0].leftWheel;
+        _wheels[1] = _axleInfos[0].rightWheel;
+        _wheels[2] = _axleInfos[1].leftWheel;
+        _wheels[3] = _axleInfos[1].rightWheel;
+        
     }
 
     private void Update()
@@ -54,6 +116,9 @@ public class CarController : MonoBehaviour
 
         // サイドブレーキ
         _sideBrakeInput = keyboard.spaceKey .isPressed ? 1f : 0f;
+
+        // 速度取得
+        _speedKmh = _rb.linearVelocity.magnitude * 3.6f;
     }
 
     public void FixedUpdate()
@@ -114,6 +179,59 @@ public class CarController : MonoBehaviour
             }
 
 
+        }
+    }
+
+    /// <summary>
+    /// 指定した車輪が接地しているかを返す
+    /// </summary>
+    /// <param name="index"></param>
+    public bool IsWheelGrounded(int index)
+    {
+        return _wheels[index].isGrounded;
+    }
+
+    /// <summary>
+    /// 指定した車輪の前後スリップ
+    /// </summary>
+    /// <param name="index"></param>
+    public float GetForwardSlip(int index)
+    {
+        // 接地情報を格納する構造体
+        WheelHit hit;
+
+        // ホイールが地面に接地している場合のみスリップ値を取得
+        if (_wheels[index].GetGroundHit(out hit))
+        {
+            // 縦スリップ
+            return hit.forwardSlip;
+
+        }
+        else
+        {
+            return 0f;
+        }
+    }
+
+    /// <summary>
+    /// 指定した車輪の左右スリップ
+    /// </summary>
+    /// <param name="index"></param>
+    public float GetSidewaysSlip(int index)
+    {
+        // 接地情報を格納する構造体
+        WheelHit hit;
+
+        // ホイールが地面に接地している場合のみスリップ値を取得
+        if (_wheels[index].GetGroundHit(out hit))
+        {
+            // 横スリップ
+            return hit.sidewaysSlip;
+
+        }
+        else
+        {
+            return 0f;
         }
     }
 }

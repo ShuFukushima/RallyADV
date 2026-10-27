@@ -54,8 +54,12 @@ public class DriveTrainModel : MonoBehaviour
     [Tooltip("トランスミッションの種類（AT・MT）")]
     [SerializeField] private Transmission _transmission = Transmission.AT;
 
+    [Header("プロパティ")]
+    public int CurrentGear => _nowGear;
+
     [Header("参照")]
     [SerializeField] private EngineModel _engine;
+    [SerializeField] private VehicleSettingSO _setting;
 
     /// <summary>
     /// ドライブトレインの1フレームのモデル 順番を明確化するため、CarController から呼び出す
@@ -118,6 +122,25 @@ public class DriveTrainModel : MonoBehaviour
 
         // 駆動輪の総トルクを返す
         return _wheelTorque;
+    }
+
+    private void Awake()
+    {
+        // 設定をScriptableObjectから読み取る
+        _gearsRatio = new float[_setting.GearsRatio.Length];    // ギアの長さを合わせる
+        for (int i = 0; i < _setting.GearsRatio.Length; i++)
+        {
+            _gearsRatio[i] = _setting.GearsRatio[i];
+        }
+        _finalRatio = _setting.FinalRatio;
+        _transmissionEfficiency = _setting.TransmissionEfficiency;
+        _clutchCoefficient = _setting.ClutchCoefficient;
+        _maxClutchTorque = _setting.MaxClutchTorque;
+        _clutchEngageStartRPM = _setting.ClutchEngageStartRPM;
+        _clutchFullEngageRPM = _setting.ClutchFullEngageRPM;
+        _atShiftUpRPM = _setting.AtShiftUpRPM;
+        _atShiftDownRPM = _setting.AtShiftDownRPM;
+        _shiftWaitTime = _setting.ShiftWaitTime;
     }
 
     private void Update()
