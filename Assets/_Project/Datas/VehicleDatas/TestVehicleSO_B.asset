@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26e4089b155c5164cb1d16198b70f424, type: 3}
+  m_Name: TestVehicleSO_B
+  m_EditorClassIdentifier: Assembly-CSharp::VehicleSettingSO
+  _mass: 700
+  _centerOfMass: {x: 0, y: -0.2, z: 0}
+  _maxSteeringAngle: 30
+  _maxBrakeTorque: 100
+  _maxSideBrakeTorque: 500
+  _axleMotor: 0100
+  _axleSteering: 0100
+  _wheelRadius: 0.273
+  _wheelDampingRate: 0.25
+  _suspensionDistance: 0.3
+  _spring: 35000
+  _damper: 4500
+  _targetPosition: 0.5
+  _forwardExtremumSlip: 0.4
+  _forwardExtremumValue: 1
+  _forwardAsymptoteSlip: 0.8
+  _forwardAsymptoteValue: 0.5
+  _forwardStiffness: 1
+  _sidewaysExtremumSlip: 0.2
+  _sidewaysExtremumValue: 1
+  _sidewaysAsymptoteSlip: 0.5
+  _sidewaysAsymptoteValue: 0.75
+  _sidewaysStiffness: 1
+  _torqueCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.024012007
+      outSlope: 0.024012007
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 2000
+      value: 49
+      inSlope: 0.016432239
+      outSlope: 0.016432239
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.16215955
+    - serializedVersion: 3
+      time: 4000
+      value: 61.7
+      inSlope: 0.000060133996
+      outSlope: 0.000060133996
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.16102327
+    - serializedVersion: 3
+      time: 6500
+      value: 53.9
+      inSlope: -0.005216016
+      outSlope: -0.005216016
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 7000
+      value: 50
+      inSlope: -0.011860526
+      outSlope: -0.011860526
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.85188574
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _idleRPM: 900
+  _idleThrottle: 0.3
+  _revLimitRPM: 7000
+  _momentOfInertia: 0.1
+  _baseInternalResistance: 5
+  _coefficientInternalResistance: 0.003
+  _gearsRatio:
+  - 3.5
+  - 3.538
+  - 2.052
+  - 1.392
+  - 0.97
+  - 0.81
+  _finalRatio: 2
+  _transmissionEfficiency: 1
+  _clutchCoefficient: 0.05
+  _maxClutchTorque: 100
+  _clutchEngageStartRPM: 900
+  _clutchFullEngageRPM: 3000
+  _atShiftUpRPM: 6000
+  _atShiftDownRPM: 2500
+  _shiftWaitTime: 0.5

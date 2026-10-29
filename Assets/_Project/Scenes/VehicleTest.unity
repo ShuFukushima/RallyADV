@@ -1398,7 +1398,6 @@ MonoBehaviour:
   _internalResistance: 0
   _baseInternalResistance: 5
   _coefficientInternalResistance: 0.003
-  _setting: {fileID: 11400000, guid: e30061041942fb24e8c745f258fd408b, type: 2}
 --- !u!65 &226744648
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5308,7 +5307,6 @@ MonoBehaviour:
   _onShiftTime: 0
   _transmission: 0
   _engine: {fileID: 226744647}
-  _setting: {fileID: 11400000, guid: e30061041942fb24e8c745f258fd408b, type: 2}
 --- !u!65 &1548312952
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6231,7 +6229,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1729421135
 Transform:
   m_ObjectHideFlags: 0

@@ -21,8 +21,6 @@ public class DriveTrainModel : MonoBehaviour
     [SerializeField] private float _finalRatio;
     [Tooltip("車輪の回転数から逆算される、エンジン側相当のRPM（テスト・表示用）")]
     [SerializeField] private float _engineRPMFromWheel;
-    [Tooltip("エンジン側トルク（N・m テスト用手入力 現在は未使用）")]
-    [SerializeField] private float _testEngineTorque;
     [Tooltip("動力の伝達効率（0～1）")]
     [SerializeField, Range(0f, 1f)] private float _transmissionEfficiency = 1f;
     [Tooltip("車輪側トルク（表示用）")]
@@ -59,7 +57,7 @@ public class DriveTrainModel : MonoBehaviour
 
     [Header("参照")]
     [SerializeField] private EngineModel _engine;
-    [SerializeField] private VehicleSettingSO _setting;
+    private VehicleSettingSO _setting;
 
     /// <summary>
     /// ドライブトレインの1フレームのモデル 順番を明確化するため、CarController から呼び出す
@@ -79,7 +77,7 @@ public class DriveTrainModel : MonoBehaviour
             if ((_engineRPM >= _atShiftUpRPM) && (_nowGear < _gearsRatio.Length - 1) && (_nowGear != 0) && (_onShiftTime >= _shiftWaitTime))
             {
                 _nowGear++;
-                Debug.Log("Transmission : AT" + " befor gear : " + (_nowGear - 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
+                // Debug.Log("Transmission : AT" + " befor gear : " + (_nowGear - 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
                 // 経過時間を0に戻す
                 _onShiftTime = 0f;
             }
@@ -87,7 +85,7 @@ public class DriveTrainModel : MonoBehaviour
             if ((_engineRPM <= _atShiftDownRPM) && (_nowGear > 1) && (_onShiftTime >= _shiftWaitTime))
             {
                 _nowGear--;
-                Debug.Log("Transmission : AT" + " befor gear : " + (_nowGear + 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
+                //Debug.Log("Transmission : AT" + " befor gear : " + (_nowGear + 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
                 _onShiftTime = 0f;
             }
         }
@@ -107,7 +105,7 @@ public class DriveTrainModel : MonoBehaviour
         _currentClutchTorque = _rotateDiff * _clutchCoefficient;
 
         // 接続率をエンジンRPMで変更する
-        float clutchConnectRate = Mathf.InverseLerp(_clutchEngageStartRPM, _clutchFullEngageRPM, _engine.EngineRPM);
+        float clutchConnectRate = Mathf.InverseLerp(_clutchEngageStartRPM, _clutchFullEngageRPM, _engineRPM);
         _clutchConnectRate = clutchConnectRate;
 
         // 範囲内に収め、接続率をかける
@@ -124,8 +122,13 @@ public class DriveTrainModel : MonoBehaviour
         return _wheelTorque;
     }
 
-    private void Awake()
+    /// <summary>
+    /// スクリプタブルオブジェクトで設定、CarControllerからに呼び出す
+    /// </summary>
+    public void SetSetting(VehicleSettingSO scriptableObject)
     {
+        _setting = scriptableObject;
+
         // 設定をScriptableObjectから読み取る
         _gearsRatio = new float[_setting.GearsRatio.Length];    // ギアの長さを合わせる
         for (int i = 0; i < _setting.GearsRatio.Length; i++)
@@ -141,6 +144,9 @@ public class DriveTrainModel : MonoBehaviour
         _atShiftUpRPM = _setting.AtShiftUpRPM;
         _atShiftDownRPM = _setting.AtShiftDownRPM;
         _shiftWaitTime = _setting.ShiftWaitTime;
+
+        // EngineModelのスクリプタブルオブジェクトを設定
+        _engine.SetSetting(_setting);
     }
 
     private void Update()
@@ -152,12 +158,12 @@ public class DriveTrainModel : MonoBehaviour
             if (keyboard.downArrowKey.wasPressedThisFrame && _nowGear > 1)
             {
                 _nowGear--;
-                Debug.Log("Transmission : MT" + " befor gear : " + (_nowGear + 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
+                // Debug.Log("Transmission : MT" + " befor gear : " + (_nowGear + 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
             }
             else if (keyboard.upArrowKey.wasPressedThisFrame && _nowGear < _gearsRatio.Length - 1)
             {
                 _nowGear++;
-                Debug.Log("Transmission : MT" + " befor gear : " + (_nowGear - 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
+                // Debug.Log("Transmission : MT" + " befor gear : " + (_nowGear - 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
             }
         }
 

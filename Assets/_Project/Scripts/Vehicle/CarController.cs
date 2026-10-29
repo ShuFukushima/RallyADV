@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,21 +5,20 @@ using UnityEngine.InputSystem;
 public class CarController : MonoBehaviour
 {
     /// <summary>個々の車軸の情報（左右駆動輪・ハンドル）</summary>
-    public List<AxleInfo> _axleInfos;
+    [SerializeField] private List<AxleInfo> _axleInfos;
     /// <summary>最大舵角</summary>
     [SerializeField] private float _maxSteeringAngle; // 適用可能な最大ハンドル角度
     [SerializeField] private float _maxSideBrakeTorque;    // サイドブレーキの値
-    public float _maxBrakeTorque;
-    public float _steeringInput;
-    public float _brakeInput;
-    public float _sideBrakeInput;
+    [SerializeField] private float _maxBrakeTorque;
+    [SerializeField] private float _steeringInput;
+    [SerializeField] private float _brakeInput;
+    [SerializeField] private float _sideBrakeInput;
 
     /// <summary>駆動輪の平均回転数</summary>
     [SerializeField] private float _driveWheelRPMAve = 0;
     [SerializeField] private int _driveWheelCount = 0;
 
     [SerializeField] private Rigidbody _rb;
-    [SerializeField] private GameObject _centerOfMass = null;  // 重心を表すオブジェクト
 
     [SerializeField] private float _speedKmh = 0;
     private WheelCollider[] _wheels = new WheelCollider[4];
@@ -33,11 +31,15 @@ public class CarController : MonoBehaviour
     ///<summary>実際に車輪を駆動させるトルクを求める</summary>
     [SerializeField] private DriveTrainModel _driveTrain;
     /// <summary>車両個別の設定</summary>
-    [SerializeField] private VehicleSettingSO _setting;
+    [SerializeField] private VehicleSettingSO _setting = null;
 
     private void Awake()
     {
         // 設定を写す
+        if( _setting == null)
+        {
+            Debug.LogError("CarControllerにVehicle Setting SOが設定されていません！");
+        }
         // Rigidbody
         _rb = GetComponent<Rigidbody>();
         _rb.mass = _setting.Mass;
@@ -88,6 +90,9 @@ public class CarController : MonoBehaviour
 
         }
 
+        // DriveTrainModelのスクリプタブルオブジェクトを設定する
+        _driveTrain.SetSetting(_setting);
+
     }
 
     private void Start()
@@ -121,7 +126,7 @@ public class CarController : MonoBehaviour
         _speedKmh = _rb.linearVelocity.magnitude * 3.6f;
     }
 
-    public void FixedUpdate()
+    private void FixedUpdate()
     {
 
 
