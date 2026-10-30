@@ -1388,7 +1388,6 @@ MonoBehaviour:
   _idleRPM: 900
   _revLimitRPM: 7000
   _momentOfInertia: 0.1
-  _throttle: 0
   _idleThrottle: 0.3
   _appliedThrottle: 0
   _generatedTorque: 0
@@ -4477,6 +4476,7 @@ GameObject:
   - component: {fileID: 1212038786}
   - component: {fileID: 1212038785}
   - component: {fileID: 1212038788}
+  - component: {fileID: 1212038789}
   m_Layer: 0
   m_Name: TestVehicle_NewCarCon
   m_TagString: Untagged
@@ -4587,16 +4587,35 @@ MonoBehaviour:
   _maxSteeringAngle: 45
   _maxSideBrakeTorque: 250
   _maxBrakeTorque: 400
+  _throttleInput: 0
   _steeringInput: 0
   _brakeInput: 0
   _sideBrakeInput: 0
   _driveWheelRPMAve: 0
   _driveWheelCount: 0
   _rb: {fileID: 0}
-  _centerOfMass: {fileID: 299713947}
   _speedKmh: 0
   _driveTrain: {fileID: 1548312951}
   _setting: {fileID: 11400000, guid: e30061041942fb24e8c745f258fd408b, type: 2}
+  _input: {fileID: 1212038789}
+--- !u!114 &1212038789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212038784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b65b1d8459b7d6e4c9b6a2033f53fae2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VehicleInput
+  _throttleInput: {fileID: -8561857966872304661, guid: 2c6330295c3096947aaa89ee7158f259, type: 3}
+  _brakeInput: {fileID: -7508236269729636773, guid: 2c6330295c3096947aaa89ee7158f259, type: 3}
+  _sideBrakeInput: {fileID: 2779156585678110214, guid: 2c6330295c3096947aaa89ee7158f259, type: 3}
+  _steerInput: {fileID: 3731805106506069136, guid: 2c6330295c3096947aaa89ee7158f259, type: 3}
+  _shiftUpInput: {fileID: -7741378719021001303, guid: 2c6330295c3096947aaa89ee7158f259, type: 3}
+  _shiftDownInput: {fileID: 2087908181471358452, guid: 2c6330295c3096947aaa89ee7158f259, type: 3}
 --- !u!1 &1243042100
 GameObject:
   m_ObjectHideFlags: 0
@@ -5290,7 +5309,6 @@ MonoBehaviour:
   _nowGear: 1
   _finalRatio: 5.2
   _engineRPMFromWheel: 0
-  _testEngineTorque: 0
   _transmissionEfficiency: 1
   _wheelTorque: 0
   _engineRPM: 3000

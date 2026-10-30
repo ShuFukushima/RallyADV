@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CarController : MonoBehaviour
 {
@@ -10,6 +9,7 @@ public class CarController : MonoBehaviour
     [SerializeField] private float _maxSteeringAngle; // 適用可能な最大ハンドル角度
     [SerializeField] private float _maxSideBrakeTorque;    // サイドブレーキの値
     [SerializeField] private float _maxBrakeTorque;
+    [SerializeField] private float _throttleInput;
     [SerializeField] private float _steeringInput;
     [SerializeField] private float _brakeInput;
     [SerializeField] private float _sideBrakeInput;
@@ -32,6 +32,7 @@ public class CarController : MonoBehaviour
     [SerializeField] private DriveTrainModel _driveTrain;
     /// <summary>車両個別の設定</summary>
     [SerializeField] private VehicleSettingSO _setting = null;
+    private VehicleInput _input;
 
     private void Awake()
     {
@@ -39,6 +40,7 @@ public class CarController : MonoBehaviour
         if( _setting == null)
         {
             Debug.LogError("CarControllerにVehicle Setting SOが設定されていません！");
+            return;
         }
         // Rigidbody
         _rb = GetComponent<Rigidbody>();
@@ -93,6 +95,14 @@ public class CarController : MonoBehaviour
         // DriveTrainModelのスクリプタブルオブジェクトを設定する
         _driveTrain.SetSetting(_setting);
 
+        // つけ忘れ防止
+        _input = GetComponent<VehicleInput>();
+        if( _input == null)
+        {
+            Debug.LogError("VehicleInputを設定してください。");
+            return;
+        }
+
     }
 
     private void Start()
@@ -108,19 +118,50 @@ public class CarController : MonoBehaviour
 
     private void Update()
     {
-        Keyboard keyboard = Keyboard.current;
-        if (keyboard == null) return;
+        // スロットル
+        if (_input.Throttle > 0)
+        {
+            _throttleInput += 1f * Time.deltaTime;
+        }
+        else
+        {
+            _throttleInput = 0f;
+        }
+        if (_throttleInput >= 1.0f)
+        {
+            _throttleInput = 1.0f;
+        }
 
         // ステアリング
-        _steeringInput = 0f;
-        if (keyboard.aKey.isPressed) _steeringInput -= 1f;
-        if (keyboard.dKey.isPressed) _steeringInput += 1f;
-
+        if(_input.Steer > 0)
+        {
+            _steeringInput += 1f * Time.deltaTime;
+        }
+        else if(_input.Steer < 0)
+        {
+            _steeringInput -= 1f * Time.deltaTime;
+        }
+        else
+        {
+            _steeringInput = 0f;
+        }
+        _steeringInput = Mathf.Clamp(_steeringInput, -1f, 1f);
+        
         // ブレーキ
-        _brakeInput = keyboard.shiftKey.isPressed ? 1f : 0f;
+        _brakeInput = _input.Brake;
 
         // サイドブレーキ
-        _sideBrakeInput = keyboard.spaceKey .isPressed ? 1f : 0f;
+        _sideBrakeInput = _input.SideBrake ? 1f : 0f;
+
+        // 変速処理
+        if (_input.ShiftUpPressed)
+        {
+            _driveTrain.ShiftUp();
+        }
+        if(_input.ShiftDownPressed)
+        {
+            _driveTrain.ShiftDown();
+        }
 
         // 速度取得
         _speedKmh = _rb.linearVelocity.magnitude * 3.6f;
@@ -149,7 +190,7 @@ public class CarController : MonoBehaviour
         _driveWheelRPMAve = _driveWheelRPMAve / (float)_driveWheelCount;
 
         // 駆動輪の総トルクを算出（ドライブトレイン→エンジン）
-        float allWheelTorque = _driveTrain.DriveTrainStep(_driveWheelRPMAve);
+        float allWheelTorque = _driveTrain.DriveTrainStep(_driveWheelRPMAve, _throttleInput);
 
         // 駆動輪1つのトルクは総トルク÷駆動輪数
         float motor = allWheelTorque / (float)_driveWheelCount;

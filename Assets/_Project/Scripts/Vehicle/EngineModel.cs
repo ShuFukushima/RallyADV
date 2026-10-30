@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 public class EngineModel : MonoBehaviour
 {
     /// <summary>エンジンのトルクカーブ（横軸RPM、縦軸N·m）これは公称値のため、すでに内部抵抗分がひかれた後の値になる点に注意</summary>
@@ -10,7 +9,6 @@ public class EngineModel : MonoBehaviour
     [SerializeField] private float _revLimitRPM = 7000f;
     /// <summary>慣性モーメント（kg·m²）</summary>
     [SerializeField, Range(0.001f, 1f)] private float _momentOfInertia = 0.1f;
-    [SerializeField, Range(0f, 1f)] private float _throttle;
     [SerializeField] private float _idleThrottle = 0.3f;
     [SerializeField] private float _appliedThrottle;
     /// <summary>発生トルク（トルクカーブとスロットル開度から得られる値）</summary>
@@ -36,7 +34,7 @@ public class EngineModel : MonoBehaviour
     /// エンジンの1フレームのモデル 順番を明確化するため、ドライブトレインモデルから呼び出す
     /// </summary>
     /// <param name="loadTorque"></param>
-    public void EngineStep(float loadTorque)
+    public void EngineStep(float loadTorque, float throttle)
     {
         // RPMに合わせて内部抵抗を計算する（基礎内部抵抗 + RPM * 係数
         _internalResistance = _baseInternalResistance + (_rpm * _coefficientInternalResistance);
@@ -49,7 +47,7 @@ public class EngineModel : MonoBehaviour
 
         // 使用するスロットルを決定する
         // 現在のRPMがアイドルRPMよりも低く、かつ、プレイヤーのスロットル入力がアイドルスロットルより低いなら
-        if (_rpm <= _idleRPM && _throttle <= _idleThrottle)
+        if (_rpm <= _idleRPM && throttle <= _idleThrottle)
         {
             _appliedThrottle = _idleThrottle;
         }
@@ -60,7 +58,7 @@ public class EngineModel : MonoBehaviour
         }
         else
         {
-            _appliedThrottle = _throttle;
+            _appliedThrottle = throttle;
         }
 
         // 発生トルクを計算（(現在のRPMから得られるトルク + 公称値に合わせるための内部抵抗分加算)×スロットル開度）
@@ -101,24 +99,4 @@ public class EngineModel : MonoBehaviour
         _coefficientInternalResistance = _setting.CoefficientInternalResistance;
     }
 
-    private void Update()
-    {
-        Keyboard keyboard = Keyboard.current;
-        if (keyboard == null) return;
-
-        // スロットル入力（仮）
-        if (keyboard.wKey.isPressed)
-        {
-            _throttle += 1f * Time.deltaTime;
-        }
-        else
-        {
-            _throttle = 0f;
-        }
-        if( _throttle >= 1.0f)
-        {
-            _throttle = 1.0f;
-        }
-
-    }
 }

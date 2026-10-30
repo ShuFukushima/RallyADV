@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 // クラッチ・ギア・ファイナル・タイヤの回転までを表すモデル
 public class DriveTrainModel : MonoBehaviour
@@ -63,7 +62,7 @@ public class DriveTrainModel : MonoBehaviour
     /// ドライブトレインの1フレームのモデル 順番を明確化するため、CarController から呼び出す
     /// </summary>
     /// <param name="loadWheelRPM"></param>
-    public float DriveTrainStep(float loadWheelRPM)
+    public float DriveTrainStep(float loadWheelRPM, float throttleInput)
     {
         // エンジンのRPMを取得
         _engineRPM = _engine.EngineRPM;
@@ -112,7 +111,7 @@ public class DriveTrainModel : MonoBehaviour
         _currentClutchTorque = Mathf.Clamp(_currentClutchTorque, -_maxClutchTorque, _maxClutchTorque) * _clutchConnectRate;
 
         // エンジンの処理を呼び出す
-        _engine.EngineStep(_currentClutchTorque);
+        _engine.EngineStep(_currentClutchTorque, throttleInput);
 
         // 車輪側のトルク（エンジン側トルクの手入力代わりにクラッチトルクを使用）
         // 車輪側トルク = クラッチトルク * ギア比 * ファイナル比 * 伝達効率
@@ -149,24 +148,33 @@ public class DriveTrainModel : MonoBehaviour
         _engine.SetSetting(_setting);
     }
 
-    private void Update()
+    /// <summary>
+    /// MTシフトアップ処理
+    /// </summary>
+    public void ShiftUp()
     {
-        Keyboard keyboard = Keyboard.current;
-        // ギアの切り替え（マニュアル）
-        if(_transmission == Transmission.MT)
-        {
-            if (keyboard.downArrowKey.wasPressedThisFrame && _nowGear > 1)
-            {
-                _nowGear--;
-                // Debug.Log("Transmission : MT" + " befor gear : " + (_nowGear + 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
-            }
-            else if (keyboard.upArrowKey.wasPressedThisFrame && _nowGear < _gearsRatio.Length - 1)
-            {
-                _nowGear++;
-                // Debug.Log("Transmission : MT" + " befor gear : " + (_nowGear - 1) + " after gear : " + _nowGear + " RPM : " + _engineRPM + " wheel RPM : " + _wheelRPM + " clutch connect rate : " + _clutchConnectRate);
-            }
-        }
+        if (_transmission != Transmission.MT)
+            return;
 
+        if(_nowGear < _gearsRatio.Length - 1)
+        {
+            _nowGear++;
+        }
     }
+
+    /// <summary>
+    /// MTシフトダウン処理
+    /// </summary>
+    public void ShiftDown()
+    {
+        if (_transmission != Transmission.MT)
+            return;
+
+        if (_nowGear > 1)
+        {
+            _nowGear--;
+        }
+    }
+
 
 }
