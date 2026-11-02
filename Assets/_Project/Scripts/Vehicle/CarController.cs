@@ -7,6 +7,8 @@ public class CarController : MonoBehaviour
     [SerializeField] private List<AxleInfo> _axleInfos;
     /// <summary>最大舵角</summary>
     [SerializeField] private float _maxSteeringAngle; // 適用可能な最大ハンドル角度
+    /// <summary>ステアリングを回す速度</summary>
+    [SerializeField] private float _steerSpeed = 1.0f;
     [SerializeField] private float _maxSideBrakeTorque;    // サイドブレーキの値
     [SerializeField] private float _maxBrakeTorque;
     [SerializeField] private float _throttleInput;
@@ -135,15 +137,16 @@ public class CarController : MonoBehaviour
         // ステアリング
         if(_input.Steer > 0)
         {
-            _steeringInput += 1f * Time.deltaTime;
+            _steeringInput += _steerSpeed * Time.deltaTime;
         }
         else if(_input.Steer < 0)
         {
-            _steeringInput -= 1f * Time.deltaTime;
+            _steeringInput -= _steerSpeed * Time.deltaTime;
         }
         else
         {
-            _steeringInput = 0f;
+            // 少しずつ減らす
+            _steeringInput = Mathf.MoveTowards(_steeringInput, 0f, _steerSpeed * Time.deltaTime);
         }
         _steeringInput = Mathf.Clamp(_steeringInput, -1f, 1f);
         
