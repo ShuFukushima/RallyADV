@@ -227,7 +227,49 @@ public class CarController : MonoBehaviour
                 axleInfo.rightWheel.brakeTorque = brake;
             }
 
+            // 接地している情報を取得する
+            if(axleInfo.leftWheel.GetGroundHit(out WheelHit leftHit))
+            {
+                WheelFrictionCurve forward = axleInfo.leftWheel.forwardFriction;
+                WheelFrictionCurve sideway = axleInfo.leftWheel.sidewaysFriction;
+                if(leftHit.collider.tag == "Ground_Tarmac_Dry")
+                {
+                    forward.stiffness = 1.0f;
+                    sideway.stiffness = 1.0f;
 
+                    axleInfo.leftWheel.forwardFriction = forward;
+                    axleInfo.leftWheel.sidewaysFriction = sideway;
+                }
+                else if (leftHit.collider.tag == "Ground_Tarmac_Wet")
+                {
+                    forward.stiffness = 0.7f;
+                    sideway.stiffness = 0.7f;
+
+                    axleInfo.leftWheel.forwardFriction = forward;
+                    axleInfo.leftWheel.sidewaysFriction = sideway;
+                }
+            }
+            if (axleInfo.rightWheel.GetGroundHit(out WheelHit rightHit))
+            {
+                WheelFrictionCurve forward = axleInfo.rightWheel.forwardFriction;
+                WheelFrictionCurve sideway = axleInfo.rightWheel.sidewaysFriction;
+                if (rightHit.collider.tag == "Ground_Tarmac_Dry")
+                {
+                    forward.stiffness = 1.0f;
+                    sideway.stiffness = 1.0f;
+
+                    axleInfo.rightWheel.forwardFriction = forward;
+                    axleInfo.rightWheel.sidewaysFriction = sideway;
+                }
+                else if (rightHit.collider.tag == "Ground_Tarmac_Wet")
+                {
+                    forward.stiffness = 0.7f;
+                    sideway.stiffness = 0.7f;
+
+                    axleInfo.rightWheel.forwardFriction = forward;
+                    axleInfo.rightWheel.sidewaysFriction = sideway;
+                }
+            }
         }
     }
 
@@ -281,6 +323,28 @@ public class CarController : MonoBehaviour
         else
         {
             return 0f;
+        }
+    }
+
+    /// <summary>
+    /// 指定した車輪がどのタグの地面に接地しているか
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public string GetGroundHit(int index)
+    {
+        // 接地情報を格納する構造体
+        WheelHit hit;
+
+        // ホイールが地面に接地している場合のみ取得
+        if (_wheels[index].GetGroundHit(out hit))
+        {
+            return hit.collider.gameObject.tag;
+
+        }
+        else
+        {
+            return "no hit";
         }
     }
 }

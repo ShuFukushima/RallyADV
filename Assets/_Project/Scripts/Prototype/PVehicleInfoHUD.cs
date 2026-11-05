@@ -18,6 +18,7 @@ public class PVehicleInfoHUD : MonoBehaviour
     [SerializeField] private Text[] _isGrounded;
     [SerializeField] private Text[] _forwardSlip;
     [SerializeField] private Text[] _sidewaySlip;
+    [SerializeField] private Text[] _groundTag;
 
     private void Update()
     {
@@ -40,6 +41,8 @@ public class PVehicleInfoHUD : MonoBehaviour
             // 縦横スリップ
             _forwardSlip[i].text = _car.GetForwardSlip(i).ToString("0.000");
             _sidewaySlip[i].text = _car.GetSidewaysSlip(i).ToString("0.000");
+            // 接地している地面のタグ
+            _groundTag[i].text = _car.GetGroundHit(i);
         }
     }
 }
