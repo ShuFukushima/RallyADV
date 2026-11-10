@@ -263,8 +263,8 @@ public class CarController : MonoBehaviour
                 }
                 else if (rightHit.collider.tag == "Ground_Tarmac_Wet")
                 {
-                    forward.stiffness = 0.7f;
-                    sideway.stiffness = 0.7f;
+                    forward.stiffness = 0.5f;
+                    sideway.stiffness = 0.5f;
 
                     axleInfo.rightWheel.forwardFriction = forward;
                     axleInfo.rightWheel.sidewaysFriction = sideway;
