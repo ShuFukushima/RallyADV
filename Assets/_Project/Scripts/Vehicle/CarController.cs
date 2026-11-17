@@ -100,14 +100,6 @@ public class CarController : MonoBehaviour
         // DriveTrainModelのスクリプタブルオブジェクトを設定する
         _driveTrain.SetSetting(_setting);
 
-        // GripControllerの付け忘れを確認し、車両個別の設定を渡す
-        if (_gripController == null)
-        {
-            Debug.LogError("CarControllerにGripControllerが設定されていません");
-            return;
-        }
-        _gripController.SetSetting(_setting);
-
         // つけ忘れ防止
         _input = GetComponent<VehicleInput>();
         if( _input == null)
@@ -115,6 +107,14 @@ public class CarController : MonoBehaviour
             Debug.LogError("VehicleInputを設定してください。");
             return;
         }
+
+        // GripControllerの付け忘れを確認し、車両個別の設定を渡す
+        if (_gripController == null)
+        {
+            Debug.LogError("CarControllerにGripControllerが設定されていません");
+            return;
+        }
+        _gripController.SetSetting(_setting);
 
     }
 
