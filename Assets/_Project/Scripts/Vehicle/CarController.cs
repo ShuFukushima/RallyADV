@@ -32,6 +32,9 @@ public class CarController : MonoBehaviour
     [Header("参照")]
     ///<summary>実際に車輪を駆動させるトルクを求める</summary>
     [SerializeField] private DriveTrainModel _driveTrain;
+    /// <summary>地面とタイヤから各輪のグリップを更新する</summary>
+    [Tooltip("タイヤと路面から各輪のグリップを更新するコンポーネント")]
+    [SerializeField] private GripController _gripController;
     /// <summary>車両個別の設定</summary>
     [SerializeField] private VehicleSettingSO _setting = null;
     private VehicleInput _input;
@@ -96,6 +99,14 @@ public class CarController : MonoBehaviour
 
         // DriveTrainModelのスクリプタブルオブジェクトを設定する
         _driveTrain.SetSetting(_setting);
+
+        // GripControllerの付け忘れを確認し、車両個別の設定を渡す
+        if (_gripController == null)
+        {
+            Debug.LogError("CarControllerにGripControllerが設定されていません");
+            return;
+        }
+        _gripController.SetSetting(_setting);
 
         // つけ忘れ防止
         _input = GetComponent<VehicleInput>();
@@ -226,50 +237,12 @@ public class CarController : MonoBehaviour
                 axleInfo.leftWheel.brakeTorque = brake;
                 axleInfo.rightWheel.brakeTorque = brake;
             }
+        }
 
-            // 接地している情報を取得する
-            if(axleInfo.leftWheel.GetGroundHit(out WheelHit leftHit))
-            {
-                WheelFrictionCurve forward = axleInfo.leftWheel.forwardFriction;
-                WheelFrictionCurve sideway = axleInfo.leftWheel.sidewaysFriction;
-                if(leftHit.collider.tag == "Ground_Tarmac_Dry")
-                {
-                    forward.stiffness = 1.0f;
-                    sideway.stiffness = 1.0f;
-
-                    axleInfo.leftWheel.forwardFriction = forward;
-                    axleInfo.leftWheel.sidewaysFriction = sideway;
-                }
-                else if (leftHit.collider.tag == "Ground_Tarmac_Wet")
-                {
-                    forward.stiffness = 0.7f;
-                    sideway.stiffness = 0.7f;
-
-                    axleInfo.leftWheel.forwardFriction = forward;
-                    axleInfo.leftWheel.sidewaysFriction = sideway;
-                }
-            }
-            if (axleInfo.rightWheel.GetGroundHit(out WheelHit rightHit))
-            {
-                WheelFrictionCurve forward = axleInfo.rightWheel.forwardFriction;
-                WheelFrictionCurve sideway = axleInfo.rightWheel.sidewaysFriction;
-                if (rightHit.collider.tag == "Ground_Tarmac_Dry")
-                {
-                    forward.stiffness = 1.0f;
-                    sideway.stiffness = 1.0f;
-
-                    axleInfo.rightWheel.forwardFriction = forward;
-                    axleInfo.rightWheel.sidewaysFriction = sideway;
-                }
-                else if (rightHit.collider.tag == "Ground_Tarmac_Wet")
-                {
-                    forward.stiffness = 0.5f;
-                    sideway.stiffness = 0.5f;
-
-                    axleInfo.rightWheel.forwardFriction = forward;
-                    axleInfo.rightWheel.sidewaysFriction = sideway;
-                }
-            }
+        // トルク・ステアリング・ブレーキを入れたあとに、路面とタイヤに応じた各輪のグリップを更新する
+        if (_gripController != null)
+        {
+            _gripController.GripStep(_wheels);
         }
     }
 
