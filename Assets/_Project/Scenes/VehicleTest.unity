@@ -5847,6 +5847,7 @@ GameObject:
   - component: {fileID: 1212038785}
   - component: {fileID: 1212038788}
   - component: {fileID: 1212038789}
+  - component: {fileID: 1212038790}
   m_Layer: 0
   m_Name: TestVehicle_NewCarCon
   m_TagString: Untagged
@@ -5967,6 +5968,7 @@ MonoBehaviour:
   _rb: {fileID: 0}
   _speedKmh: 0
   _driveTrain: {fileID: 1548312951}
+  _gripController: {fileID: 1212038790}
   _setting: {fileID: 11400000, guid: e30061041942fb24e8c745f258fd408b, type: 2}
 --- !u!114 &1212038789
 MonoBehaviour:
@@ -5986,6 +5988,35 @@ MonoBehaviour:
   _steerInput: {fileID: 3731805106506069136, guid: 2c6330295c3096947aaa89ee7158f259, type: 3}
   _shiftUpInput: {fileID: -7741378719021001303, guid: 2c6330295c3096947aaa89ee7158f259, type: 3}
   _shiftDownInput: {fileID: 2087908181471358452, guid: 2c6330295c3096947aaa89ee7158f259, type: 3}
+--- !u!114 &1212038790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212038784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12e7da1b5454c534dbcbb7c67e2df412, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GripController
+  _tire: {fileID: 11400000, guid: 624fd9a42f5f2474d9b0ec3df1987228, type: 2}
+  _surfaceTable: {fileID: 11400000, guid: b434acee0b1e1c3468671a2a95c4b786, type: 2}
+  _forwardGrip:
+  - 0
+  - 0
+  - 0
+  - 0
+  _sidewaysGrip:
+  - 0
+  - 0
+  - 0
+  - 0
+  _surfaceNames:
+  - 
+  - 
+  - 
+  - 
 --- !u!1 &1243042100
 GameObject:
   m_ObjectHideFlags: 0

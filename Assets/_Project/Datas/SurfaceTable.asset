@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4927d7aa532735478f44d3cfd85554f, type: 3}
+  m_Name: SurfaceTable
+  m_EditorClassIdentifier: Assembly-CSharp::SurfaceTableSO
+  _entries:
+  - _tag: Ground_Tarmac_Dry
+    _surface: {fileID: 11400000, guid: e4ed970b5be03f24e83ed7120bbee00a, type: 2}
+  - _tag: Ground_Tarmac_Wet
+    _surface: {fileID: 11400000, guid: de61b44839a2c4f4b817c79097c40b7a, type: 2}
+  _minimumGrip: 0.2
