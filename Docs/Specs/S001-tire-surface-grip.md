@@ -137,3 +137,11 @@
 ## 9. 未決定
 
 - なし(数値はすべて仮で、第6週に調整する)。
+
+## 10. 実装前の確認での回答(2026-11-17、Antigravity の質問に Claude Code が回答)
+
+1. 警告を1回にする記録は GameObject 単位(`hit.collider.gameObject`)。1つの地面に Collider が複数あっても警告は1回にするため。警告は `#if UNITY_EDITOR` で囲む。
+2. 車輪が浮いているときは、`_surfaceNames` も前の値のまま。
+3. `menuName` は `ScriptableObjects/SurfaceData`、`ScriptableObjects/TireData`、`ScriptableObjects/SurfaceTable`。初期値は `_value = 1.0f`、`_grip = 1.0f`、相性 `= 1.0f`、`_minimumGrip = 0.2f`。
+4. 表でタグは一致したが路面が未割り当て(null)のときは、`TryGetSurface` が false を返し、最低グリップにする。警告は「SurfaceTable の路面が未設定: `<タグ>`」として、同じく地面1つにつき1回。
+5. `_surfaceNames` は `SurfaceDataSO` の `.name`。`_gripController` は CarController の `[Header("参照")]` の下に置く。
